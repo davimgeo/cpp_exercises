@@ -37,9 +37,7 @@ int main() {
     std::vector<double> x_square = x_square_vector(result);
 
     std::vector<double> y = circle_function(result, 4);
-    // for (double element : y) {
-    //     std::cout << element << " ";
-    // }   
+    
     std::ofstream outfile_y("/home/malum/Desktop/coding_tests/data/y_vector.txt");
     for (const auto &e : y) outfile_y << e << "\n";
 
