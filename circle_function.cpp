@@ -1,49 +1,48 @@
-#include <iostream>
 #include <cmath>
-#include <vector>
 #include <fstream>
+#include <iostream>
 
-std::vector<double> linspace(double start, double stop, int step) {
-    std::vector<double> result;
-    double dum = (std::abs(start) + std::abs(stop)) / step;
-    result.push_back(start);
-    for (int i = 0; i < step; i++) {
-        start += dum;
-        result.push_back(start);
-    }
-    return result;
-}
+class CircleFunction {
+  public:
+  static const int size = 101;
+  double theta[size];
+  double cartesian_cords_x[size];
+  double cartesian_cords_y[size];
+  double radius = 1;
 
-std::vector<double> x_square_vector(std::vector<double> x){
-    for(int i = 0; i < x.size(); i++){
-        x[i] = x[i]*x[i];
+  void Linspace(double start, double stop, int step) {
+    double increment = (std::abs(start) + std::abs(stop)) / step;
+    theta[0] = start;
+    for (int i = 1; i <= step; ++i) {
+      start += increment;
+      theta[i] = start;
     }
-    return x;
-}
+  }
 
-std::vector<double> circle_function(std::vector<double> x, double radius){
-    std::vector<double> y;
-    std::vector<double> x_square = x_square_vector(x);
-    for(int i = 0; i < x.size(); i++){
-        double dum = sqrt(radius - x_square[i]);
-        y.push_back(dum);
+  void Polar2Cartesian() {
+    for (int i = 0; i < size; ++i) {
+      double angle = theta[i];
+      cartesian_cords_x[i] = radius * cos(angle);
+      cartesian_cords_y[i] = radius * sin(angle);
     }
-    y[y.size() - 1] = 0;
-    return y;	
+  }
+};
+
+void ExportFile(double file[], std::string file_path) {
+  std::ofstream outfile(file_path);
+  for (int i = 0; i < CircleFunction::size; ++i) {
+    outfile << file[i] << "\n";
+  }
 }
 
 int main() {
-    std::vector<double> result = linspace(-2, 2, 1001);
-    std::vector<double> x_square = x_square_vector(result);
+  CircleFunction circle;
+  circle.Linspace(0, 2*M_PI, CircleFunction::size - 1);
+  circle.Polar2Cartesian(); 
 
-    std::vector<double> y = circle_function(result, 4);
-    
-    std::ofstream outfile_y("/home/malum/Desktop/coding_tests/data/y_vector.txt");
-    for (const auto &e : y) outfile_y << e << "\n";
+  std::string path = "/home/malum/Desktop/coding_tests/circle_exercise/data/";
+  ExportFile(circle.cartesian_cords_x, path + "x_vector.txt");
+  ExportFile(circle.cartesian_cords_y, path + "y_vector.txt");
 
-    std::ofstream outfile_x("/home/malum/Desktop/coding_tests/data/x_vector.txt");
-    for (const auto &e : result) outfile_x << e << "\n";
-
-    std::cout << std::endl;
-    return 0;
+  return 0;
 }
